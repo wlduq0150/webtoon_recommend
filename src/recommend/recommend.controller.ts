@@ -9,7 +9,7 @@ import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 export class RecommendController {
     constructor(private readonly recommendService: RecommendService) {}
 
-    @Post("/test")
+    @Post("/webtoons")
     async test(@Body() recommendBody: any): Promise<any> {
         const { userId, genres, newExcludeWebtoonIds } = recommendBody;
         const webtoons: Webtoon[] = await this.recommendService.recommendWebtoon(

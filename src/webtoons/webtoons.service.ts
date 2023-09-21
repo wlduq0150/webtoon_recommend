@@ -3,7 +3,7 @@ import { Webtoon } from 'src/sequelize/entity/webtoon.model';
 import { SelectOption, WebtoonInfo } from './types';
 import { Cache } from 'cache-manager';
 import { WebtoonAlreadyExistException, WebtoonNotFoundException, WebtoonPropertyWrongException } from 'src/exception/webtoonException/webtoonExceptions';
-import { runInThisContext } from 'vm';
+import * as fs from "fs";
 
 @Injectable()
 export class WebtoonsService {
@@ -90,6 +90,13 @@ export class WebtoonsService {
         });
         return allId;
 	}
+
+    async getAllWebtoonGenres(): Promise<string[]> {
+        const filePath = "C:\\Users\\wlduq\\Desktop\\webtoon_recommend\\webtoon_recommend\\src\\webtoons\\crawling\\genres\\kakaoGenre.txt";
+        const readData: string = (await fs.readFileSync(filePath)).toString();
+        const allGenres: string[] = readData.split("\r\n");
+        return allGenres;
+    }
 
     async getAllWebtoonForCategory(category: string): Promise<Webtoon[]> {
         const allWebtoon: Webtoon[] = await this.webtoonModel.findAll({ where: { category } });

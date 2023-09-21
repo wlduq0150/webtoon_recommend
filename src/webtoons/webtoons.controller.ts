@@ -6,15 +6,17 @@ import { WebtoonsService } from './webtoons.service';
 export class WebtoonsController {
     constructor(private webtoonService: WebtoonsService) {}
 
-    @Get("test")
-    test() {
-        return this.webtoonService.getAllWebtoonId();
+    @Get("/genreKeyWords")
+    getAllGenreKeyWords() {
+        return this.webtoonService.getAllWebtoonGenres();
     }
 
     @Get("/:day")
     getAllWebtoonForDay(@Param("day") day: string) {
         return this.webtoonService.getAllWebtoonForDay(day);
     }
+
+    
 
     
 
