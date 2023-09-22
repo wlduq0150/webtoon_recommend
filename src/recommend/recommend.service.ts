@@ -165,13 +165,15 @@ export class RecommendService {
         const recommendExcludeCache: string = await this.cacheManager.get(recommendExcludeCacheKey);
         let excludeWebtoonIds: string[] = recommendExcludeCache ? JSON.parse(recommendExcludeCache) : [];
 
-        newExcludeWebtoonIds.map(
-            (newExcludeWebtoonId) => {
-                if (!(excludeWebtoonIds.includes(newExcludeWebtoonId))) {
-                    excludeWebtoonIds.push(newExcludeWebtoonId);
+        if (newExcludeWebtoonIds.length) {
+            newExcludeWebtoonIds.map(
+                (newExcludeWebtoonId) => {
+                    if (!(excludeWebtoonIds.includes(newExcludeWebtoonId))) {
+                        excludeWebtoonIds.push(newExcludeWebtoonId);
+                    }
                 }
-            }
-        );
+            );
+        }
 
         // 사용자가 이미 읽었던 웹툰 목록 불러오기
         let userReadWebtoonIds: string[] = await this.usersSerivce.getUserReadWebtoonIds(userId);

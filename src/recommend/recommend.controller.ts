@@ -9,7 +9,7 @@ import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 export class RecommendController {
     constructor(private readonly recommendService: RecommendService) {}
 
-    @Post("/test")
+    @Post("/webtoons")
     async test(@Body() recommendBody: any): Promise<any> {
         const { userId, genres, newExcludeWebtoonIds } = recommendBody;
         const webtoons: Webtoon[] = await this.recommendService.recommendWebtoon(
@@ -20,15 +20,15 @@ export class RecommendController {
         return webtoons;
     }
 
-    @CacheTTL(300)
-    @UseInterceptors(CacheInterceptor)
-    @Get("/webtoon")
-    async recommendWebtoonForGenre(@Query() queryText): Promise<string> {
-        const query = qs.parse(queryText, { comma: true });
-        const genres = query.genres as string[];
-        const webtoons: Webtoon[] = await this.recommendService.createRecommendWebtoons(genres);
-        return JSON.stringify(webtoons);
-    }
+    // @CacheTTL(300)
+    // @UseInterceptors(CacheInterceptor)
+    // @Get("/webtoon")
+    // async recommendWebtoonForGenre(@Query() queryText): Promise<string> {
+    //     const query = qs.parse(queryText, { comma: true });
+    //     const genres = query.genres as string[];
+    //     const webtoons: Webtoon[] = await this.recommendService.createRecommendWebtoons(genres);
+    //     return JSON.stringify(webtoons);
+    // }
     
 
 }
