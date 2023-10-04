@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Post, Query, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { Webtoon } from 'src/sequelize/entity/webtoon.model';
 import { RecommendService } from './recommend.service';
-import * as qs from "qs";
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { RecommendBodyDto } from './dto/recommend.dto';
 
 
 @Controller('recommend')
@@ -10,25 +9,10 @@ export class RecommendController {
     constructor(private readonly recommendService: RecommendService) {}
 
     @Post("/webtoons")
-    async test(@Body() recommendBody: any): Promise<any> {
-        const { userId, genres, newExcludeWebtoonIds } = recommendBody;
+    async test(@Body() recommendBody: RecommendBodyDto): Promise<Webtoon[]> {
         const webtoons: Webtoon[] = await this.recommendService.recommendWebtoon(
-            userId,
-            genres,
-            newExcludeWebtoonIds
+            recommendBody
         );
         return webtoons;
     }
-
-    // @CacheTTL(300)
-    // @UseInterceptors(CacheInterceptor)
-    // @Get("/webtoon")
-    // async recommendWebtoonForGenre(@Query() queryText): Promise<string> {
-    //     const query = qs.parse(queryText, { comma: true });
-    //     const genres = query.genres as string[];
-    //     const webtoons: Webtoon[] = await this.recommendService.createRecommendWebtoons(genres);
-    //     return JSON.stringify(webtoons);
-    // }
-    
-
 }

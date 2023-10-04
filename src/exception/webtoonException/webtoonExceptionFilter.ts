@@ -5,7 +5,7 @@ import { WebtoonException } from "./webtoonException";
 
 @Catch(WebtoonException)
 export class WebtoonExceptionFilter implements ExceptionFilter {
-    catch(exception: any, host: ArgumentsHost) {
+    catch(exception: WebtoonException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const req = ctx.getRequest<Request>();
         const res = ctx.getResponse<Response>();
@@ -18,6 +18,8 @@ export class WebtoonExceptionFilter implements ExceptionFilter {
 
         let message: string = exception.message;
         if (exception.message) message = exception.message;
+
+        if (exception.data) console.log(`webtoonId ${exception.data.webtoonId}\n${exception.data}`);
 
         res.status(statusCode)
         .json({

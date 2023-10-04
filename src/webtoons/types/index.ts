@@ -6,22 +6,37 @@ export const UpdateDay = {
     "금": 5,
     "토": 6,
     "일": 7,
+    "완": 12,
 }
 
+export const UpdateDayList = [ "월", "화", "수", "목", "금", "토", "일", "완"];
+
 export type WebtoonInfo = {
-    webtoonId: string | null;
-    title: string | null;
-    author: string[] | string | null;
+    webtoonId: string;
+    title: string;
+    author: string[] | null;
     episodeLength: number | null;
     thumbnail: string | null;
-    service: string | null;
-    updateDay: string | null;
-    category: string | null;
-    genres: string[] | string | null;
-    genreCount: number | null;
+    service: string;
+    updateDay: string;
+    category: string;
+    genres: string[] | null;
+    genreCount: number;
     description: string | null;
     fanCount: number | null;
     embVector: number[] | null;
+}
+
+export interface WebtoonEPLength {
+    webtoonId: string;
+    service: string;
+    episodeLength: number | null;
+}
+
+export interface WebtoonUpdateDay {
+    webtoonId: string;
+    service: string;
+    updateDay: string | null;
 }
 
 export type trainingData = {
@@ -36,6 +51,7 @@ export type trainingResult = {
 
 export type SelectOption = {
     genreCount: number,
-    genre?: string,
+    category?: string,
     service?: string,
+    descriptionLength?: number;
 }

@@ -26,7 +26,7 @@ async function sendLoginRequest(page: Page): Promise<boolean> {
     // 로그인 버튼 클릭
     await page.click(submitSelector);
 
-    // 페이지 이동이 두번이기 때문에 waitFor
+    // 페이지 이동이 두번이기 때문에 waitFor 두번
     await page.waitForNavigation();
     await page.waitForNavigation();
 

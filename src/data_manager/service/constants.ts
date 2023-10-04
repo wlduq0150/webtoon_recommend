@@ -1,0 +1,1 @@
+export const ServiceList = [ "kakao", "naver" ];  

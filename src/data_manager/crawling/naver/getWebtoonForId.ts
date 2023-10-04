@@ -1,8 +1,8 @@
 import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import { WebtoonInfo } from "src/webtoons/types";
-import { root } from "cheerio/lib/static";
-import { elementAt } from "rxjs";
+import { genreNaverTransform } from "src/data_manager/genres/transform/genreTransform";
+import { categoryNaverTransform, TransformedData } from "src/data_manager/genres/transform/categoryTransform";
 
 async function getNaverWebtoonForId(idList: string[]): Promise<WebtoonInfo[]> {
     const webtoonInfoList: WebtoonInfo[] = [];
@@ -46,6 +46,7 @@ async function getNaverWebtoonForId(idList: string[]): Promise<WebtoonInfo[]> {
         const episodeLength: number = parseInt(rootElement.text().match(reg)[0]);
         webtoonInfo.episodeLength = episodeLength;
 
+        // 팬 카운트
         rootElement = $(fanSelector);
         const fanCount: number = parseInt(rootElement.text().replaceAll(",", ""));
         webtoonInfo.fanCount = fanCount;
@@ -68,10 +69,13 @@ async function getNaverWebtoonForId(idList: string[]): Promise<WebtoonInfo[]> {
         webtoonInfo.author = author;
 
         // 업데이트 날짜
-        const updateDay: string = rootElement
-        .find("div.ContentMetaInfo__meta_info--GbTg4 > span.ContentMetaInfo__info_item--utGrf")
-        .text()
-        .charAt(0);
+        const updateDayText: string = rootElement
+        .find("div.ContentMetaInfo__meta_info--GbTg4 > em")
+        .text();
+        let updateDay: string = updateDayText.includes("완결") ? "완" : updateDayText.charAt(0);
+        if (Number.isInteger(updateDay)) {
+            updateDay = "휴";
+        }
         webtoonInfo.updateDay = updateDay;
 
         // 줄거리
@@ -80,8 +84,8 @@ async function getNaverWebtoonForId(idList: string[]): Promise<WebtoonInfo[]> {
         .text();
         webtoonInfo.description = description;
 
-        // 장르
-        const genres: string[] = [];
+        // 장르, 장르 개수, 카테고리 
+        let genres: string[] = [];
         rootElement
         .find("div.EpisodeListInfo__summary_wrap--ZWNW5 > div > div")
         .children()
@@ -90,9 +94,26 @@ async function getNaverWebtoonForId(idList: string[]): Promise<WebtoonInfo[]> {
             const genre: string = $data("a").text().replace("#", "");
             genres.push(genre);
         });
-        webtoonInfo.genres = genres;
+        const category = genres.length ? genres[0] : null;
 
-        console.log(webtoonInfo);
+        const transforemdData: TransformedData = categoryNaverTransform(
+            category,
+            genres
+        );
+
+        console.log("before: ", transforemdData.transformedGenres);
+
+        const transformedCategory = transforemdData.transformedCategory;
+        const transformedGenres = genreNaverTransform(transforemdData.transformedGenres);
+
+        console.log("after: ", transformedGenres);
+
+        const genreCount: number = transformedGenres.length;
+        webtoonInfo.genres = transformedGenres;
+        webtoonInfo.category = transformedCategory;
+        webtoonInfo.genreCount = genreCount;
+
+        console.log(id);
         webtoonInfoList.push(webtoonInfo);
     }
 

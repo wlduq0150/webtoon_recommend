@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import puppeteer from "puppeteer"
-import { UpdateDay } from '../../types';
+import { UpdateDay } from '../../../webtoons/types';
 
 async function getKakaoWeeklyWebtoonId(): Promise<string[]> {
   const webtoonIdList: string[] = [];
@@ -18,6 +18,8 @@ async function getKakaoWeeklyWebtoonId(): Promise<string[]> {
     const rootSelector = '#__next > div > div.flex.w-full.grow.flex-col.px-122pxr > div > div.flex.grow.flex-col > div.mb-4pxr.flex-col > div > div.px-11pxr > div > div';
 
     await page.goto(`https://page.kakao.com/menu/10010/screen/52?tab_uid=${day}`);
+
+    // 무한 스크롤링 방지
     while (true) {
       try {
         const scrollHeight = 'document.body.scrollHeight';

@@ -8,6 +8,7 @@ import { WebtoonsModule } from './webtoons/webtoons.module';
 import { RecommendModule } from './recommend/recommend.module';
 import { DataManagerModule } from './data_manager/data_manager.module';
 import { UserWebtoonModule } from './user-webtoon/user-webtoon.module';
+import { FineTuningModule } from './fine-tuning/fine-tuning.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserWebtoonModule } from './user-webtoon/user-webtoon.module';
     RecommendModule,
     DataManagerModule,
     UserWebtoonModule,
+    FineTuningModule,
   ],
   controllers: [AppController],
   providers: [AppService],

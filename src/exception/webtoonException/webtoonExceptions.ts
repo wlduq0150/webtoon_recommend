@@ -1,11 +1,12 @@
+import { WebtoonInfo } from "src/webtoons/types";
 import { WebtoonExceptionCode } from "../error.constants";
 import { ErrorCode } from "../errorCode"
 import { WebtoonException } from "./webtoonException";
 
 function createWebtoonException(statusCode: number, defaultMessage: string) {
-    return function(message?: string) {
+    return function(message?: string, data?: WebtoonInfo) {
         const errorCode = new ErrorCode(statusCode, defaultMessage);
-        return new WebtoonException(errorCode, message);
+        return new WebtoonException(errorCode, message, data);
     }
 }
 
