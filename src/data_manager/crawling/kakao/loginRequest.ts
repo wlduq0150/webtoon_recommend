@@ -1,6 +1,8 @@
 import { Page } from "puppeteer";
-const kakao_ID = "wlduq0150@naver.com";
-const kakao_PW = "wlduq0160";
+import { KAKAO_ID, KAKAO_PW } from "../naver/constatns";
+
+const kakao_ID = KAKAO_ID;
+const kakao_PW = KAKAO_PW;
 
 async function sendLoginRequest(page: Page): Promise<boolean> {
     const homeURL = "https://page.kakao.com/";

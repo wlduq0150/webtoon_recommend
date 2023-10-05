@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import { WebtoonInfo } from "src/webtoons/types";
 import { genreNaverTransform } from "src/data_manager/genres/transform/genreTransform";
 import { categoryNaverTransform, TransformedData } from "src/data_manager/genres/transform/categoryTransform";
+import loginRequest from "./loginRequest";
 
 async function getNaverWebtoonForId(idList: string[]): Promise<WebtoonInfo[]> {
     const webtoonInfoList: WebtoonInfo[] = [];
@@ -12,6 +13,9 @@ async function getNaverWebtoonForId(idList: string[]): Promise<WebtoonInfo[]> {
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
+
+    const loginResult: boolean = await loginRequest(page);
+    console.log(loginResult ? "로그인 성공" : "로그인 실패");
 
     for (let id of idList) {
         const webtoonInfo = { webtoonId: id, service: "naver" } as WebtoonInfo;

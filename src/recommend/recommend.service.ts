@@ -8,7 +8,9 @@ import { WebtoonsService } from 'src/webtoons/webtoons.service';
 import calcSimilarityFromEmbedding from './processing/calcEmbedding';
 import { genreToString } from './processing/genreToText';
 import { RecommendBodyDto } from './dto/recommend.dto';
-import { FINE_TUNE_API_KEY } from 'src/fine-tuning/constatns/constants';
+import { FINE_TUNE_API_KEY, FINE_TUNE_GPT_3_5_SYSTEM_MESSAGE } from 'src/fine-tuning/constatns/constants';
+import { gpt_3_5_prompt } from './types/iindex';
+import { ChatCompletionMessageParam } from 'openai/resources/chat';
 
 @Injectable()
 export class RecommendService {
@@ -36,6 +38,23 @@ export class RecommendService {
         return prompt;
     }
 
+    async createPrompt_3_5_FromWebtoonId(id: string): Promise<gpt_3_5_prompt> {
+        const webtoon: Webtoon = await this.webtoonService.getWebtoonForId(id);
+
+        const { title, description, category } = webtoon;
+
+        const systemMessage: string = FINE_TUNE_GPT_3_5_SYSTEM_MESSAGE;
+
+        const userMessage: string = `title: ${title}\n\ncategory: ${category}\n\nplot: ${description}\n\n위 웹툰의 장르를 추론해줘`;
+        
+        const messages: ChatCompletionMessageParam[] = [
+            { role: "system", content: systemMessage },
+            { role: "user", content: userMessage }
+        ];
+
+        return messages;
+    }
+
     async createCompletion(model: string, prompt: string, temperature: number, maxTokens: number): Promise<any> {
         try {
             const completion = await this.openai.completions.create({
@@ -44,6 +63,29 @@ export class RecommendService {
                 temperature,
                 max_tokens: maxTokens,
             });
+            return completion.choices;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async create_3_5_Completion(
+        model: string,
+        prompt: gpt_3_5_prompt,
+        temperature: number,
+        maxTokens: number
+    ): Promise<any> {
+        try {
+            const params: OpenAI.Chat.ChatCompletionCreateParams = {
+                model,
+                messages: prompt,
+                temperature,
+                max_tokens: maxTokens
+            };
+            const completion = await this.openai.chat.completions.create(
+                params
+            );
+
             return completion.choices;
         } catch (e) {
             console.log(e);
@@ -91,7 +133,33 @@ export class RecommendService {
             let genres: string[] = (
                 completion[0].text
                 .trim()
-                .replace("장르: ", "")
+                .replace("genres: ", "")
+                .replaceAll("#", "")
+                .split(" ")
+            );
+
+            return genres;
+        } catch (e) {
+            console.log(e);
+        }
+        return null;
+    }
+
+    async recommend_3_5_WebtoonGenre(prompt: gpt_3_5_prompt): Promise<string[]> {
+        try {
+            const completion = await this.create_3_5_Completion(
+                "ft:gpt-3.5-turbo-0613:personal::85xgLJEz",
+                prompt,
+                0.8,
+                60,
+            );
+
+            console.log(`[completion]\n${completion[0].message.content}\n`);
+
+            let genres: string[] = (
+                completion[0].message.content
+                .trim()
+                .replace("genres: ", "")
                 .replaceAll("#", "")
                 .split(" ")
             );

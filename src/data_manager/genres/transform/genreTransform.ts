@@ -71,6 +71,10 @@ export function genreRecommendTransform(genres: string[]): string[] {
 
     genres.slice(1).map(
         (genre) => {
+            if (!genre) {
+                return;
+            }
+
             if (kakaoGenre.includes(genre)) {
                 transformedGenres.push(genre);
                 return;

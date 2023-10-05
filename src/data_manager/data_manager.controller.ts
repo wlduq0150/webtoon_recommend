@@ -13,6 +13,12 @@ export class DataManagerController {
         //     category: "판타지",
         // });
 
+        // this.dataManager.updateWebtoonGenre_3_5({
+        //     genreCount: 4,
+        //     category: "판타지",
+        //     descriptionLength: 300,
+        // });
+
         this.dataManager.test();
     }
 

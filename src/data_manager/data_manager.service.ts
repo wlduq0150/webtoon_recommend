@@ -19,6 +19,7 @@ import getNaverWebtoonEPLengthForId from './crawling/naver/getWebtoonEPLForId';
 import getNaverFinishedWebtoonId from './crawling/naver/getFinishedWebtoonId';
 import { FineTuningService } from 'src/fine-tuning/fine-tuning.service';
 import { genreRecommendTransform } from './genres/transform/genreTransform';
+import { gpt_3_5_prompt } from 'src/recommend/types/iindex';
 
 
 
@@ -36,15 +37,25 @@ export class DataManagerService {
     }
 
     async test() {
-        // const prompt: string = await this.recommendService.createPromptFromWebtoonId("800618");
+        // this.fineTuningService.searchFineTuning("ftjob-1WpsYWm6Jz4lWL5ZvENgYIRu")
+        // .then((data) => { console.log(data) });
 
-        // console.log(`[prompt]\n${prompt}\n`);
+        //this.fineTuningService.createFineTune_3_5_DataToJsonFile(["로판"])
+        
+        //this.fineTuningService.createFileUpload("/workspace/finding_restaurant/finding_rest/src/fine-tuning/result/fineTune_3_5_Data95.jsonl");
 
-        // const recommendGenres: string[] = await this.recommendService.recommendWebtoonGenre(prompt);
+        //this.fineTuningService.deleteUploadFile("file-8WVi2Vje8AdDlFhOyslyV1EU");
 
-        // console.log(recommendGenres);
+        // this.fineTuningService.getUploadFileList()
+        // .then((data) => { console.log(data) });
 
-        this.recommendService.createPromptFromWebtoonId("50852727")
+        // this.fineTuningService.createFineTune_3_5_Model(
+        //     "file-yLRFwYzoOLxXzZV2Op2Y36qe",
+        //     "ft:gpt-3.5-turbo-0613:personal::866sUesF",
+        // )
+        // .then((data) => { console.log(data) });
+
+        this.fineTuningService.getFineTuningList()
         .then((data) => { console.log(data) });
     }
 
@@ -264,6 +275,26 @@ export class DataManagerService {
             const prompt: string = await this.recommendService.createPromptFromWebtoonId(webtoonId);
 
             const recommendGenres: string[] = await this.recommendService.recommendWebtoonGenre(prompt);
+
+            const tsRecommendGenres: string[] = genreRecommendTransform(recommendGenres);
+            console.log(`id: ${webtoonId}\ngenres: ${genres}\ndescription: ${webtoon.description}\nrecommend: ${recommendGenres}\ntransformed: ${tsRecommendGenres}`);
+
+            await (this.sleep(5));
+        }
+    }
+
+    async updateWebtoonGenre_3_5(option: SelectOption): Promise<void> {
+        let webtoons: Webtoon[] = await this.webtoonService.getAllWebtoonForOption(option);
+        webtoons = webtoons.slice(0, 10);
+        console.log("length: ", webtoons.length);
+
+        for (let webtoon of webtoons) {
+            const webtoonId: string = webtoon.webtoonId;
+            const genres: string[] = JSON.parse(webtoon.genres);
+
+            const prompt: gpt_3_5_prompt = await this.recommendService.createPrompt_3_5_FromWebtoonId(webtoonId);
+
+            const recommendGenres: string[] = await this.recommendService.recommend_3_5_WebtoonGenre(prompt);
 
             const tsRecommendGenres: string[] = genreRecommendTransform(recommendGenres);
             console.log(`id: ${webtoonId}\ngenres: ${genres}\ndescription: ${webtoon.description}\nrecommend: ${recommendGenres}\ntransformed: ${tsRecommendGenres}`);
